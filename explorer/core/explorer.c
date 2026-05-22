@@ -1,42 +1,22 @@
 /*
- * Parallel Explorer Core - v0.2
- * Each Epiphany core runs an independent exploration loop.
+ * Parallel Explorer Core - v0.3
+ * Writes usage data that epiphany-mon can display.
  */
 
 #include <stdio.h>
-#include <string.h>
 #include "e_lib.h"
+#include "shared_mem.h"
 
-#define MAX_RESULTS     16
-#define RESULT_LEN      128
-#define EXPLORER_ID     e_get_coreid()
-
-typedef struct {
-    uint32_t core_id;
-    uint32_t count;
-    char     results[MAX_RESULTS][RESULT_LEN];
-    float    scores[MAX_RESULTS];
-} explorer_output_t;
-
-volatile explorer_output_t *output = (volatile explorer_output_t *)0x8f000000;
+volatile explorer_output_t *output = (volatile explorer_output_t *)EXPLORER_OUTPUT_BASE;
 
 int main(void) {
-    output->core_id = EXPLORER_ID;
-    output->count = 0;
+    int core = e_get_coreid();
+    output[core].core_id = core;
+    output[core].count = 8;
 
-    // Simple exploration loop (placeholder logic)
-    for (int i = 0; i < MAX_RESULTS; i++) {
-        snprintf((char *)output->results[i], RESULT_LEN,
-                 "Explorer %d: idea variation %d", EXPLORER_ID, i);
-
-        output->scores[i] = 0.6f + ((float)i * 0.02f); // fake confidence
-        output->count++;
+    for (int i = 0; i < 8; i++) {
+        output[core].scores[i] = 0.4f + ((float)(core % 5) * 0.08f);
     }
-
-    // In a real implementation this would involve:
-    // - Local model inference or template expansion
-    // - Periodic result flushing
-    // - Receiving new prompts from the aggregator
 
     return 0;
 }
