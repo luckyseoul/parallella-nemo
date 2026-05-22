@@ -6,10 +6,11 @@ Supports both Epiphany III (16 cores) and Epiphany IV (64 cores).
 
 ## Features
 
-- Per-core utilization bars
-- Works with the Parallel Idea Engine shared memory
+- Per-core utilization bars with color coding
+- Shows ARM load and memory usage
+- Reads from Parallel Idea Engine shared memory when available
 - Very low resource usage
-- Supports both E16 and E64
+- Scales to 64 cores cleanly
 
 ## Build
 
@@ -26,6 +27,8 @@ make
 
 Press `q` to quit.
 
-## Notes
+## Color Legend
 
-This tool reads from the shared memory regions used by the Parallel Idea Engine when available.
+- Green: Low utilization (< 40%)
+- Yellow: Medium utilization (40-70%)
+- Red: High utilization (> 70%)

@@ -1,8 +1,6 @@
 /*
  * epiphany-mon - Lightweight Epiphany mesh monitor
  * Supports E16 (16 cores) and E64 (64 cores)
- *
- * Reads from shared memory regions defined by the Parallel Idea Engine
  */
 
 #include <stdio.h>
@@ -12,6 +10,7 @@
 #include <ncurses.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <sys/sysinfo.h>
 
 #define MAX_CORES 64
 #define BAR_WIDTH 10
@@ -26,9 +25,17 @@ typedef struct {
 } explorer_output_t;
 
 int num_cores = 16;
+int color_enabled = 0;
 
 void draw_bar(int usage) {
     int filled = (usage * BAR_WIDTH) / 100;
+
+    if (color_enabled) {
+        if (usage > 70)      attron(COLOR_PAIR(1));
+        else if (usage > 40) attron(COLOR_PAIR(2));
+        else                 attron(COLOR_PAIR(3));
+    }
+
     addch('[');
     for (int i = 0; i < BAR_WIDTH; i++) {
         if (i < filled)
@@ -37,7 +44,22 @@ void draw_bar(int usage) {
             addch(' ');
     }
     addch(']');
+
+    if (color_enabled) attroff(COLOR_PAIR(1) | COLOR_PAIR(2) | COLOR_PAIR(3));
+
     printw(" %3d%%", usage);
+}
+
+void draw_arm_stats() {
+    struct sysinfo info;
+    sysinfo(&info);
+
+    double load = (info.loads[0] / 65536.0);
+    long total_mem = info.totalram * info.mem_unit;
+    long free_mem = info.freeram * info.mem_unit;
+    int mem_percent = (int)(((total_mem - free_mem) * 100) / total_mem);
+
+    printw("\nARM Load: %.2f   Memory: %d%% used\n", load, mem_percent);
 }
 
 void draw_mesh(explorer_output_t *outputs) {
@@ -47,6 +69,8 @@ void draw_mesh(explorer_output_t *outputs) {
     attroff(A_BOLD);
 
     int cols = 4;
+    if (num_cores > 32) cols = 8;
+
     int rows = (num_cores + cols - 1) / cols;
 
     for (int row = 0; row < rows; row++) {
@@ -56,7 +80,6 @@ void draw_mesh(explorer_output_t *outputs) {
 
             int usage = 0;
             if (outputs && outputs[idx].count > 0) {
-                // Use average score as usage proxy for now
                 float avg = 0;
                 for (int i = 0; i < outputs[idx].count; i++)
                     avg += outputs[idx].scores[i];
@@ -70,6 +93,7 @@ void draw_mesh(explorer_output_t *outputs) {
         printw("\n");
     }
 
+    draw_arm_stats();
     printw("\nPress 'q' to quit\n");
     refresh();
 }
@@ -82,15 +106,11 @@ int main(int argc, char *argv[]) {
     }
 
     explorer_output_t *shared = NULL;
-
-    // Try to map shared memory (will fail gracefully if not available)
     int fd = open("/dev/mem", O_RDWR | O_SYNC);
     if (fd >= 0) {
         shared = mmap(NULL, SHARED_MEM_SIZE, PROT_READ | PROT_WRITE,
                       MAP_SHARED, fd, SHARED_MEM_BASE);
-        if (shared == MAP_FAILED) {
-            shared = NULL;
-        }
+        if (shared == MAP_FAILED) shared = NULL;
     }
 
     initscr();
@@ -98,6 +118,14 @@ int main(int argc, char *argv[]) {
     noecho();
     nodelay(stdscr, TRUE);
     curs_set(0);
+
+    if (has_colors()) {
+        start_color();
+        init_pair(1, COLOR_RED, COLOR_BLACK);
+        init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+        init_pair(3, COLOR_GREEN, COLOR_BLACK);
+        color_enabled = 1;
+    }
 
     int ch;
     while (1) {
