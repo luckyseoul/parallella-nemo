@@ -1,0 +1,5 @@
+config BR2_PACKAGE_AGGREGATOR
+	bool "aggregator"
+	select BR2_PACKAGE_PYTHON3
+	help
+	  Parallel Idea Engine aggregator for Parallella Nemo.

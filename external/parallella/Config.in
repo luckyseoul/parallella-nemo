@@ -1,3 +1,4 @@
 source "package/etop/Config.in"
 source "package/firstboot/Config.in"
 source "package/explorer/Config.in"
+source "package/aggregator/Config.in"
