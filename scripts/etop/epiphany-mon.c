@@ -1,5 +1,5 @@
 /*
- * epiphany-mon - Lightweight Epiphany mesh monitor
+ * etop - Lightweight Epiphany mesh monitor
  * Supports E16 (16 cores) and E64 (64 cores)
  */
 

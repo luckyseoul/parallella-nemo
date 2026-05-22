@@ -68,7 +68,7 @@ Simple but effective update system:
 
 ## Image Output
 
-- SD card image (`parallella-modern.img`)
+- SD card image (`parallella-nemo.img`)
 - Root filesystem tarball for advanced users
 - Clear documentation on how to flash the image
 
