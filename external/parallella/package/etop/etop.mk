@@ -1,5 +1,11 @@
+################################################################################
+#
+# etop
+#
+################################################################################
+
 ETOP_VERSION = 1.0
-ETOP_SITE = $(TOPDIR)/../scripts/etop
+ETOP_SITE = $(BR2_EXTERNAL_PARALLELLA_PATH)/../../scripts/etop
 ETOP_SITE_METHOD = local
 
 define ETOP_BUILD_CMDS

@@ -1,5 +1,11 @@
+################################################################################
+#
+# explorer
+#
+################################################################################
+
 EXPLORER_VERSION = 1.0
-EXPLORER_SITE = $(TOPDIR)/../explorer/core
+EXPLORER_SITE = $(BR2_EXTERNAL_PARALLELLA_PATH)/../../explorer/core
 EXPLORER_SITE_METHOD = local
 
 define EXPLORER_BUILD_CMDS

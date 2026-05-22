@@ -1,0 +1,1 @@
+include $(sort $(wildcard $(BR2_EXTERNAL_PARALLELLA_PATH)/package/*/*.mk))
