@@ -1,0 +1,8 @@
+{
+  "mode": "exploration",
+  "poll_interval": 30,
+  "min_confidence": 0.70,
+  "notification_channel": "console",
+  "chatbot_checkin_hours": 48,
+  "grok_model": "grok-4.3"
+}
