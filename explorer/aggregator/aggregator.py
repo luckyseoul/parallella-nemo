@@ -1,13 +1,17 @@
 """
-Parallel Idea Aggregator v0.3
+Parallel Idea Aggregator v0.4
 
-Collects results from all Epiphany cores using shared memory,
-deduplicates, scores them, and forwards high-value ideas to Grok.
+Collects results from all Epiphany cores, deduplicates,
+scores them, and forwards high-value ideas to Grok.
+Also handles light chatbot check-ins.
 """
 
 import time
 from typing import List
 from shared_memory import EpiphanyMemoryReader
+from decision import should_send_checkin, get_mode_priority
+from chatbot_prompts import get_checkin_prompt
+from grok_client import GrokClient
 
 class Idea:
     def __init__(self, text: str, source_core: int, confidence: float):
@@ -26,15 +30,15 @@ class IdeaAggregator:
         self.pending: List[Idea] = []
         self.high_value: List[Idea] = []
         self.mem_reader = EpiphanyMemoryReader()
+        self.grok = GrokClient()
 
     def collect_results(self):
         """Read new results from Epiphany shared memory"""
         self.mem_reader.open()
-        # TODO: Actually parse explorer_output_t structures
+        # TODO: Parse actual shared memory
         self.mem_reader.close()
 
     def deduplicate(self):
-        """Remove duplicate or near-duplicate ideas"""
         unique = []
         for idea in self.pending:
             key = idea.text[:40]
@@ -44,14 +48,19 @@ class IdeaAggregator:
         self.pending = unique
 
     def evaluate_with_grok(self):
-        """Send promising ideas to Grok for deeper evaluation"""
         for idea in self.pending:
             if idea.confidence > 0.75:
-                idea.grok_score = 0.85  # placeholder
+                idea.grok_score = 0.85
                 self.high_value.append(idea)
 
+    def handle_chatbot_mode(self):
+        if should_send_checkin():
+            prompt = get_checkin_prompt()
+            result = self.grok.evaluate_ideas([prompt])
+            if result:
+                print(f"[Chatbot] {result[0]['refined_text']}")
+
     def notify_user(self):
-        """Push high-value ideas to user"""
         if self.high_value:
             print(f"[Aggregator] Found {len(self.high_value)} interesting ideas")
             for idea in self.high_value:
@@ -59,10 +68,15 @@ class IdeaAggregator:
             self.high_value.clear()
 
     def run_loop(self, interval: int = 30):
-        """Main loop"""
         while True:
-            self.collect_results()
-            self.deduplicate()
-            self.evaluate_with_grok()
-            self.notify_user()
+            mode = get_mode_priority()
+
+            if mode == "chatbot":
+                self.handle_chatbot_mode()
+            else:
+                self.collect_results()
+                self.deduplicate()
+                self.evaluate_with_grok()
+                self.notify_user()
+
             time.sleep(interval)
