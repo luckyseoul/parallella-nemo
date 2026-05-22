@@ -19,8 +19,9 @@ BR2_PACKAGE_SYSTEMD=y
 # Epiphany SDK
 BR2_PACKAGE_HOST_EPHANY_SDK=y
 
+# Packages
+BR2_PACKAGE_ETOP=y
+BR2_PACKAGE_FIRSTBOOT=y
+
 # First-boot installer
 BR2_PACKAGE_DROPBEAR=y
-
-# etop monitor
-BR2_PACKAGE_HTOP=y
