@@ -11,16 +11,31 @@ The Epiphany's strength is **predictable, regular, data-parallel execution** at 
 - Small draft models for speculative decoding
 - Custom matrix and vector kernels
 
+## Current Progress
+
+- Basic and tiled matrix multiplication kernels
+- Quantization utilities (INT8 symmetric)
+- High-level Python API skeleton
+- Tiny MLP example
+
 ## Structure
 
 ```
 epiphany/
-├── kernels/      # Low-level C kernels for the Epiphany cores
-├── python/       # Python bindings and high-level API
-├── docs/         # Documentation and design notes
-└── examples/     # Example models and workloads
+├── kernels/          # Low-level C kernels
+│   ├── matmul.c
+│   └── matmul_tiled.c
+├── python/           # Python bindings and helpers
+│   ├── epiphany_llm.py
+│   └── quantization.py
+├── examples/         # End-to-end examples
+│   └── tiny_mlp.py
+└── docs/             # Design notes
 ```
 
-## Current Status
+## Next Goals
 
-Early scaffolding. Kernel and Python layer design in progress.
+- Improve tiled matmul performance
+- Add basic attention scoring kernel
+- Better Python <-> Epiphany communication layer
+- End-to-end quantized inference example
