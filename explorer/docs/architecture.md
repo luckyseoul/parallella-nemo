@@ -4,36 +4,26 @@
 
 A low-power, always-on system that uses the Epiphany's 16 RISC cores to run many independent "explorers" in parallel. These explorers constantly generate ideas, alternative solutions, and novel connections without requiring user initiation.
 
-The key differentiator is **true parallel exploration** at very low power — something difficult to replicate efficiently on normal single/quad-core boards.
+The key differentiator is **true parallel exploration** at very low power.
 
-## System Components
+## Current Components
 
-- **Explorer Cores** (`explorer/core/`)
-  - Run independently on each Epiphany core
-  - Generate ideas using local logic or templates
-  - Write results into shared memory
+- `core/explorer.c` + `shared_mem.h` — Per-core explorer logic
+- `aggregator/aggregator.py` — Main collection and orchestration loop
+- `aggregator/notifier.py` — Multi-channel notification system
+- `aggregator/config.py` — Engine configuration
+- `aggregator/shared_memory.py` — ARM-side memory reader (stub)
+- `docs/communication.md` — Shared memory protocol
 
-- **Aggregator** (`explorer/aggregator/`)
-  - Runs on ARM side
-  - Collects, deduplicates, and scores results
-  - Forwards high-value ideas to Grok for refinement
-  - Triggers notifications
+## Runtime
 
-- **Notifier** (`explorer/aggregator/notifier.py`)
-  - Handles user notification across multiple channels
+The aggregator is intended to run as a systemd service (`parallella-idea-engine.service`).
 
-- **Communication Layer**
-  - Shared memory protocol between Epiphany and ARM
-  - Defined in `docs/communication.md`
+## Next Priorities
 
-## High-Level Flow
+1. Real shared memory implementation (mmap + Epiphany driver)
+2. Grok OAuth integration for idea evaluation
+3. Better explorer specialization across cores
+4. Notification channel implementations (Telegram, etc.)
 
-1. Epiphany cores run explorers in parallel
-2. Results written to shared memory
-3. Aggregator pulls and processes results
-4. Promising ideas sent to Grok via OAuth
-5. User is notified of high-value outputs
-
-## Current Status
-
-Scaffolding in place. Core explorer, aggregator, and communication protocol are being developed.
+This architecture keeps the Epiphany's parallelism as the central value.

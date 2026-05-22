@@ -1,0 +1,13 @@
+[Unit]
+Description=Parallel Autonomous Idea Engine
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/parallella/explorer/aggregator/aggregator.py
+Restart=always
+RestartSec=10
+User=root
+
+[Install]
+WantedBy=multi-user.target
