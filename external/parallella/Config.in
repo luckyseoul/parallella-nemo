@@ -1,0 +1,2 @@
+source "package/etop/Config.in"
+source "package/firstboot/Config.in"

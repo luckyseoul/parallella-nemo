@@ -1,0 +1,4 @@
+config BR2_PACKAGE_FIRSTBOOT
+	bool "firstboot"
+	help
+	  First-boot setup wizard for Parallella Nemo.
