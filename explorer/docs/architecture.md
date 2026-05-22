@@ -6,33 +6,34 @@ A low-power, always-on system that uses the Epiphany's 16 RISC cores to run many
 
 The key differentiator is **true parallel exploration** at very low power — something difficult to replicate efficiently on normal single/quad-core boards.
 
+## System Components
+
+- **Explorer Cores** (`explorer/core/`)
+  - Run independently on each Epiphany core
+  - Generate ideas using local logic or templates
+  - Write results into shared memory
+
+- **Aggregator** (`explorer/aggregator/`)
+  - Runs on ARM side
+  - Collects, deduplicates, and scores results
+  - Forwards high-value ideas to Grok for refinement
+  - Triggers notifications
+
+- **Notifier** (`explorer/aggregator/notifier.py`)
+  - Handles user notification across multiple channels
+
+- **Communication Layer**
+  - Shared memory protocol between Epiphany and ARM
+  - Defined in `docs/communication.md`
+
 ## High-Level Flow
 
-1. **Epiphany Cores** — Each core runs a lightweight, independent explorer
-2. **Aggregation** — Results are collected and deduplicated on the ARM side
-3. **Evaluation** — Interesting outputs are sent to Grok (via OAuth) for refinement
-4. **Notification** — High-value ideas are pushed to the user
+1. Epiphany cores run explorers in parallel
+2. Results written to shared memory
+3. Aggregator pulls and processes results
+4. Promising ideas sent to Grok via OAuth
+5. User is notified of high-value outputs
 
-## Core Explorer Design
+## Current Status
 
-Each Epiphany core will run a small, independent loop that:
-
-- Maintains its own context / prompt variation
-- Generates ideas using a lightweight local model or templates
-- Periodically reports promising outputs to the aggregator
-- Can be specialized (one core does creative thinking, another does technical feasibility, etc.)
-
-## Communication Model
-
-- Explicit shared memory regions between Epiphany cores and ARM
-- Simple message passing for results
-- Low overhead — cores mostly work independently
-
-## Next Steps
-
-- Define the core explorer runtime
-- Build basic aggregation layer
-- Integrate Grok OAuth for evaluation
-- Design notification system
-
-This architecture prioritizes the Epiphany's parallelism as the central value.
+Scaffolding in place. Core explorer, aggregator, and communication protocol are being developed.
