@@ -1,0 +1,4 @@
+config BR2_PACKAGE_EXPLORER
+	bool "explorer"
+	help
+	  Parallel Idea Engine core for Parallella Nemo.
