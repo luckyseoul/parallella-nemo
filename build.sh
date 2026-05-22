@@ -8,10 +8,8 @@ DEFCONFIG=$BR2_EXTERNAL/defconfig
 echo "Building Parallella Nemo..."
 
 if [ ! -d "../buildroot" ]; then
-    echo "Error: Buildroot not found at ../buildroot"
-    echo "Please clone Buildroot:"
-    echo "  git clone https://gitlab.com/buildroot.org/buildroot.git ../buildroot"
-    exit 1
+    echo "Buildroot not found at ../buildroot - cloning (shallow)..."
+    git clone --depth 1 https://gitlab.com/buildroot.org/buildroot.git ../buildroot
 fi
 
 make -C ../buildroot BR2_EXTERNAL=$BR2_EXTERNAL \
