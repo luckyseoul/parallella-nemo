@@ -1,0 +1,4 @@
+config BR2_PACKAGE_EPIPHANY
+	bool "epiphany"
+	help
+	  Epiphany kernel examples and tools for Parallella.
