@@ -3,7 +3,7 @@
 set -e
 
 BR2_EXTERNAL=$(pwd)/external/parallella
-DEFCONFIG=$BR2_EXTERNAL/defconfig
+DEFCONFIG=$BR2_EXTERNAL/defconfig-headless
 
 echo "Building Parallella Nemo..."
 
