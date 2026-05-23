@@ -2,8 +2,8 @@
 
 ## Requirements
 
-- Buildroot (recommended to clone at `../buildroot`)
-- Host tools: make, gcc, etc.
+- Buildroot (auto-cloned by build.sh if missing)
+- Host tools: make, gcc, git
 
 ## Quick Build
 
@@ -12,17 +12,31 @@
 ```
 
 This will:
-1. Configure Buildroot with the Parallella Nemo defconfig
-2. Build the full image
+1. Clone Buildroot (shallow) to ../buildroot if not present
+2. Configure with the Parallella Nemo defconfig-headless
+3. Build the full image
 
 ## Manual Build
 
 ```bash
 make -C ../buildroot BR2_EXTERNAL=$(pwd)/external/parallella \
-    defconfig BR2_DEFCONFIG=$(pwd)/external/parallella/defconfig
+    defconfig BR2_DEFCONFIG=$(pwd)/external/parallella/defconfig-headless
 
 make -C ../buildroot BR2_EXTERNAL=$(pwd)/external/parallella
 ```
+
+## Available Defconfigs
+
+- `defconfig-headless` – minimal headless image (current default)
+- `defconfig` – legacy / base config
+
+## Packages included in external tree
+
+- etop (Epiphany monitor)
+- firstboot
+- explorer
+- aggregator
+- fpga-loader (bitstream loading)
 
 ## Output
 
