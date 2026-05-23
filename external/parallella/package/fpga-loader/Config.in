@@ -1,0 +1,4 @@
+config BR2_PACKAGE_FPGA_LOADER
+	bool "fpga-loader"
+	help
+	  FPGA bitstream loader for Parallella (Zynq).
